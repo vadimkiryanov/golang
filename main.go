@@ -1,49 +1,78 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"log"
-	"net/http"
 )
 
-func formHandler(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		fmt.Fprintf(w, "ParseForm() err: %v", err)
-		return
-	}
-
-	fmt.Fprintf(w, "POST request successful")
-	name := r.FormValue("name")
-	address := r.FormValue("address")
-
-	fmt.Fprintf(w, "Name = %s\n", name)
-	fmt.Fprintf(w, "Address = %s\n", address)
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/hello" {
-		http.Error(w, "404 not found.", http.StatusNotFound)
-		return
-	}
-
-	if r.Method != "GET" {
-		http.Error(w, "method is not supported.", http.StatusNotFound)
-		return
-	}
-
-	fmt.Fprintf(w, "Hello!")
-}
-
 func main() {
-	fileServer := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fileServer)
-	http.HandleFunc("/form", formHandler)
-	http.HandleFunc("/hello", helloHandler)
 
-	fmt.Println("Starting server on port 8080\n")
+}
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
+func closureIncrement() func() int {
+	num := 0
+
+	return func() int {
+		num++
+		fmt.Println("num = ", num)
+		return num
+	}
+
+}
+
+func findMin(numbers ...int) int {
+	if len(numbers) == 0 {
+		return 0
+	}
+
+	min := numbers[0]
+
+	for _, number := range numbers {
+		if number < min {
+			min = number
+		}
+	}
+
+	return min
+}
+
+func sayHello(name string, age int) string {
+
+	message := fmt.Sprintf("Привет, %s! Тебе %d лет!", name, age)
+
+	return message
+}
+
+func enterTheClub(age int) (string, error) {
+	if age >= 18 && age < 100 {
+		return "Вход разрешен", nil
+
+	} else if age < 18 {
+		return "Вход запрещен", nil
+	}
+
+	return "Вход тоже запрещен", errors.New("do not enter the club")
+}
+
+func predication(dayOfTheWeek string) (string, error) {
+	switch dayOfTheWeek {
+	case "пн":
+		return "Сегодня понедельник", nil
+	case "вт":
+		return "Сегодня вторник", nil
+	case "ср":
+		return "Сегодня среда", nil
+	case "чт":
+		return "Сегодня четверг", nil
+	case "пт":
+		return "Сегодня пятница", nil
+	case "сб":
+		return "Сегодня суббота", nil
+	case "вс":
+		return "Сегодня воскресенье", nil
+
+	default:
+		return "Такого дня недели нет", errors.New("not excepted day of the week")
 	}
 
 }
