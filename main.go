@@ -5,10 +5,34 @@ import (
 	"fmt"
 )
 
-func main() {
+// Выполняется самая первая
+var initMsg string = "Init - выполняется быстрее main\n=======================\n"
 
+func init() {
+	println(initMsg)
 }
 
+func main() {
+	pointersExample()
+}
+
+// Указатели, массивы и указатели цикл for | *string - указатель
+func pointersExample() {
+  // * - принятие
+  // & - отдача
+	var msg = "Hello world"
+	println(msg, " | msg до 'changeMsg'")
+	println(&msg, " Область памяти")
+
+	var changeMsg func(*string) string = func(msg *string) string {
+		*msg += " (pointers(msg))" // дереференс
+		return *msg
+	}
+
+	fmt.Println(changeMsg(&msg) + " | msg после 'changeMsg'") // &msg - референс
+}
+
+// Замыкание, Анонимная функция
 func closureIncrement() func() int {
 	num := 0
 
@@ -20,6 +44,7 @@ func closureIncrement() func() int {
 
 }
 
+// Неограниченные аргументы
 func findMin(numbers ...int) int {
 	if len(numbers) == 0 {
 		return 0
@@ -43,6 +68,7 @@ func sayHello(name string, age int) string {
 	return message
 }
 
+// Функции Условныи оператор if Обработка ошибок
 func enterTheClub(age int) (string, error) {
 	if age >= 18 && age < 100 {
 		return "Вход разрешен", nil
@@ -54,6 +80,7 @@ func enterTheClub(age int) (string, error) {
 	return "Вход тоже запрещен", errors.New("do not enter the club")
 }
 
+// Конструкция switch case
 func predication(dayOfTheWeek string) (string, error) {
 	switch dayOfTheWeek {
 	case "пн":
