@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
 )
 
 // Выполняется самая первая
@@ -13,7 +16,38 @@ func init() {
 }
 
 func main() {
-	arrayAndSlice()
+	HTTP_Server()
+}
+
+// simple HTTP_Server
+func HTTP_Server() {
+	type User struct {
+		ID   int    `json:"id"`
+		Name string `json:"name,omitempty"`
+	}
+
+	var (
+		users = []User{{1, "Tom"}, {2, "Bob"}}
+	)
+
+	var handleUsers = func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(users)
+		fmt.Println("SERVER STARTED")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(resp)
+
+	}
+
+	http.HandleFunc("/users", handleUsers)
+
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
+
 }
 
 // массивы
@@ -55,10 +89,10 @@ func arrayAndSlice() {
 	// range - цикл
 	fmt.Println("range\n=======================\n'")
 	for index, value := range matrix {
-    if index == 6 {
-      fmt.Println("index равен: ", 6, " остановка цикла")
-      break
-    }
+		if index == 6 {
+			fmt.Println("index равен: ", 6, " остановка цикла")
+			break
+		}
 		fmt.Println(index, value)
 	}
 
