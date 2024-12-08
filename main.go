@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 )
 
+// ======= СТРУКТУРЫ =======
 type Age int
 
 func (a Age) isAdult() bool {
@@ -44,6 +46,65 @@ type DumbDatabase struct {
 	mMap map[string]User
 }
 
+// ======= ИНТЕРФЕЙСЫ =======
+type ShapeWithArea interface {
+	getArea() float32
+}
+type ShapeWithPerimeter interface {
+	getPerimeter() float32
+}
+
+// Общий интерфейс для фигур, которые будут иметь метод getArea() и getPerimeter()
+type Shape interface {
+	ShapeWithArea
+	ShapeWithPerimeter
+}
+
+// Структура Square (Квадрат) которая имеет поле sideLength
+type Square struct {
+	sideLength float32
+}
+
+// Определение метода getArea для структуры Square
+func (s Square) getArea() float32 {
+	return s.sideLength * s.sideLength
+}
+
+// Определение метода getPerimeter для структуры Square
+func (s Square) getPerimeter() float32 {
+	return s.sideLength * 4
+}
+
+// Структура Circle (Круг)
+type Circle struct {
+	raduis float32
+}
+
+// Определение метода getArea для структуры Circle
+func (c Circle) getArea() float32 {
+	return c.raduis * c.raduis * math.Pi
+}
+
+// Определение метода getPerimeter для структуры Circle
+func (c Circle) getPerimeter() float32 {
+	return c.raduis * 2 * math.Pi
+}
+
+// Функция принта метода getArea, сюда можно поместить любую структуру,
+// которая имеет метод getArea
+func printShapeArea(shape Shape) {
+	var typeName string
+	switch shape.(type) {
+	case Square:
+		typeName = "Square"
+	case Circle:
+		typeName = "Circle"
+	}
+
+	fmt.Println("Area: ", shape.getArea(), typeName)
+	fmt.Println("Perimeter: ", shape.getPerimeter(), typeName)
+}
+
 // Выполняется самая первая
 func init() {
 	var initMsg string = "Init - выполняется быстрее main\n=======================\n"
@@ -51,7 +112,46 @@ func init() {
 }
 
 func main() {
-	structExample()
+	interfaceExample()
+}
+
+func interfaceExample() {
+	var square = Square{
+		sideLength: 50,
+	}
+	var circle = Circle{
+		raduis: 50,
+	}
+
+	// Пустой интерфейс
+	var emptyInterface = func(i interface{}) {
+		// Проверка типа
+		switch value := i.(type) {
+		case int:
+			fmt.Println("int", value)
+		case string:
+			fmt.Println("string", value)
+		default:
+			fmt.Println("unknown type", value)
+		}
+
+		// Проверка на существование типа (type guard)
+		var str, ok = i.(string)
+		if !ok {
+			fmt.Println("interface is not a string")
+			return
+		}
+
+		fmt.Println("interface: ", len(str))
+	}
+
+	// logs
+	printShapeArea(square)
+	printShapeArea(circle)
+
+	emptyInterface(2222)
+	emptyInterface("circle")
+
 }
 
 // Структуры
