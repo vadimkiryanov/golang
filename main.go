@@ -8,18 +8,85 @@ import (
 	"net/http"
 )
 
-// Выполняется самая первая
-var initMsg string = "Init - выполняется быстрее main\n=======================\n"
+type Age int
 
+func (a Age) isAdult() bool {
+	if a >= 18 {
+		return true
+	} else {
+		return false
+	}
+}
+
+// Структура
+type User struct {
+	name   string
+	age    Age
+	gender string
+	city   string
+}
+
+// Value resiver
+// Расширение структуры, добавление метода "printUserInfo"
+// копирует и не изменяет исходный объект
+func (u User) getName() string {
+	return u.name
+}
+
+// Pointer resiver
+// Ссылается на исходный объект и меняет его
+func (u *User) setName(newName string) {
+	u.name = newName
+}
+
+// Структура с мапой
+type DumbDatabase struct {
+	mMap map[string]User
+}
+
+// Выполняется самая первая
 func init() {
+	var initMsg string = "Init - выполняется быстрее main\n=======================\n"
 	println(initMsg)
 }
 
 func main() {
-	mapFn()
+	structExample()
 }
 
-func mapFn() {
+// Структуры
+func structExample() {
+
+	// Конструктор
+	var NewUser = func(name string, age int, gender string, city string) User {
+		return User{
+			name:   name,
+			age:    Age(age),
+			gender: gender,
+			city:   city,
+		}
+	}
+
+	// Создание переменной вручную по структуре
+	var user1 = User{
+		name:   "Tom",
+		age:    12,
+		gender: "male",
+		city:   "New York",
+	}
+
+	// Создание переменной генератором по структуре
+	var user2 = NewUser("Bob", 23, "male", "New York")
+	user1.getName()                            // Вызов метода "printUserInfo", который был добавлен
+	user2.setName("НОВОЕ ИМЯ - ПОМЕНЯЛОСЬ!!!") // Вызов метода "printUserInfo", который был добавлен
+
+	fmt.Println(user1)
+	fmt.Println(user2) // Здесь поменялось значение
+	fmt.Println(user1.age.isAdult())
+}
+
+// Мапы
+func mapExample() {
 	var hashMap = map[string]int{
 		"a": 1,
 		"b": 2,
