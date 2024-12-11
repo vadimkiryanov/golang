@@ -1,109 +1,19 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
-	"math"
+	"main-mode/shape"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
+
+	"github.com/zhashkevych/scheduler"
 )
-
-// ======= СТРУКТУРЫ =======
-type Age int
-
-func (a Age) isAdult() bool {
-	if a >= 18 {
-		return true
-	} else {
-		return false
-	}
-}
-
-// Структура
-type User struct {
-	name   string
-	age    Age
-	gender string
-	city   string
-}
-
-// Value resiver
-// Расширение структуры, добавление метода "printUserInfo"
-// копирует и не изменяет исходный объект
-func (u User) getName() string {
-	return u.name
-}
-
-// Pointer resiver
-// Ссылается на исходный объект и меняет его
-func (u *User) setName(newName string) {
-	u.name = newName
-}
-
-// Структура с мапой
-type DumbDatabase struct {
-	mMap map[string]User
-}
-
-// ======= ИНТЕРФЕЙСЫ =======
-type ShapeWithArea interface {
-	getArea() float32
-}
-type ShapeWithPerimeter interface {
-	getPerimeter() float32
-}
-
-// Общий интерфейс для фигур, которые будут иметь метод getArea() и getPerimeter()
-type Shape interface {
-	ShapeWithArea
-	ShapeWithPerimeter
-}
-
-// Структура Square (Квадрат) которая имеет поле sideLength
-type Square struct {
-	sideLength float32
-}
-
-// Определение метода getArea для структуры Square
-func (s Square) getArea() float32 {
-	return s.sideLength * s.sideLength
-}
-
-// Определение метода getPerimeter для структуры Square
-func (s Square) getPerimeter() float32 {
-	return s.sideLength * 4
-}
-
-// Структура Circle (Круг)
-type Circle struct {
-	raduis float32
-}
-
-// Определение метода getArea для структуры Circle
-func (c Circle) getArea() float32 {
-	return c.raduis * c.raduis * math.Pi
-}
-
-// Определение метода getPerimeter для структуры Circle
-func (c Circle) getPerimeter() float32 {
-	return c.raduis * 2 * math.Pi
-}
-
-// Функция принта метода getArea, сюда можно поместить любую структуру,
-// которая имеет метод getArea
-func printShapeArea(shape Shape) {
-	var typeName string
-	switch shape.(type) {
-	case Square:
-		typeName = "Square"
-	case Circle:
-		typeName = "Circle"
-	}
-
-	fmt.Println("Area: ", shape.getArea(), typeName)
-	fmt.Println("Perimeter: ", shape.getPerimeter(), typeName)
-}
 
 // Выполняется самая первая
 func init() {
@@ -112,16 +22,12 @@ func init() {
 }
 
 func main() {
-	interfaceExample()
+	schedulerExample()
 }
 
 func interfaceExample() {
-	var square = Square{
-		sideLength: 50,
-	}
-	var circle = Circle{
-		raduis: 50,
-	}
+	var square = shape.NewSquare(50)
+	var circle = shape.NewCircle(50)
 
 	// Пустой интерфейс
 	var emptyInterface = func(i interface{}) {
@@ -146,11 +52,37 @@ func interfaceExample() {
 	}
 
 	// logs
-	printShapeArea(square)
-	printShapeArea(circle)
+	shape.PrintShapeArea(square)
+	shape.PrintShapeArea(circle)
 
 	emptyInterface(2222)
 	emptyInterface("circle")
+
+}
+
+// Испольнование внешнего пакета
+func schedulerExample() {
+	var parseSubscriptionData = func(ctx context.Context) {
+		time.Sleep(time.Second * 1)
+		fmt.Printf("subscription parsed successfuly at %s\n", time.Now().String())
+	}
+
+	var sendStatistics = func(ctx context.Context) {
+		time.Sleep(time.Second * 5)
+		fmt.Printf("statistics sent at %s\n", time.Now().String())
+	}
+
+	ctx := context.Background()
+
+	worker := scheduler.NewScheduler()
+	worker.Add(ctx, parseSubscriptionData, time.Second*5)
+	worker.Add(ctx, sendStatistics, time.Second*10)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, os.Interrupt)
+
+	<-quit
+	worker.Stop()
 
 }
 
@@ -158,31 +90,31 @@ func interfaceExample() {
 func structExample() {
 
 	// Конструктор
-	var NewUser = func(name string, age int, gender string, city string) User {
-		return User{
-			name:   name,
-			age:    Age(age),
-			gender: gender,
-			city:   city,
+	var NewUser = func(name string, age int, gender string, city string) shape.User {
+		return shape.User{
+			Name:   name,
+			Age:    shape.Age(age),
+			Gender: gender,
+			City:   city,
 		}
 	}
 
 	// Создание переменной вручную по структуре
-	var user1 = User{
-		name:   "Tom",
-		age:    12,
-		gender: "male",
-		city:   "New York",
+	var user1 = shape.User{
+		Name:   "Tom",
+		Age:    12,
+		Gender: "male",
+		City:   "New York",
 	}
 
 	// Создание переменной генератором по структуре
 	var user2 = NewUser("Bob", 23, "male", "New York")
-	user1.getName()                            // Вызов метода "printUserInfo", который был добавлен
-	user2.setName("НОВОЕ ИМЯ - ПОМЕНЯЛОСЬ!!!") // Вызов метода "printUserInfo", который был добавлен
+	user1.GetName()                            // Вызов метода "printUserInfo", который был добавлен
+	user2.SetName("НОВОЕ ИМЯ - ПОМЕНЯЛОСЬ!!!") // Вызов метода "printUserInfo", который был добавлен
 
 	fmt.Println(user1)
 	fmt.Println(user2) // Здесь поменялось значение
-	fmt.Println(user1.age.isAdult())
+	fmt.Println(user1.Age.IsAdult())
 }
 
 // Мапы
