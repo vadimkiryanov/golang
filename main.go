@@ -1,8 +1,6 @@
 package main
 
-import (
-	"main-mode/pkg/goroutine"
-)
+import goroutine "main-mode/pkg/14_goroutine"
 
 // Выполняется самая первая
 func init() {
@@ -12,5 +10,6 @@ func init() {
 
 // Функция main - сама по себе как горутина
 func main() {
-	goroutine.SleepRun()
+
+	goroutine.GenerateAndCreateLogFilesUsers()
 }
