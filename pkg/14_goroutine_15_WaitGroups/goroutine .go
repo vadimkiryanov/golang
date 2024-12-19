@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"sync"
 	"time"
 )
 
 // Определяем возможные действия для логов
 var actions = []string{
-	"logged IN",    // Пользователь вошел в систему
-	"logged OUT",   // Пользователь вышел из системы
+	"logged IN",     // Пользователь вошел в систему
+	"logged OUT",    // Пользователь вышел из системы
 	"CREATE record", // Создание записи
 	"DELETE record", // Удаление записи
 	"UPDATE record", // Обновление записи
@@ -24,9 +25,9 @@ type logItem struct {
 
 // Структура для хранения информации о пользователе
 type user struct {
-	id    int        // Уникальный идентификатор пользователя
-	email string     // Электронная почта пользователя
-	logs  []logItem  // Список логов действий пользователя
+	id    int       // Уникальный идентификатор пользователя
+	email string    // Электронная почта пользователя
+	logs  []logItem // Список логов действий пользователя
 }
 
 // Пример пользователя с предопределенными логами
@@ -55,7 +56,7 @@ func (u user) getActivityInfo() string {
 }
 
 // Функция для генерации и создания пользователей
-func generateAndCreateUsers(count int) []user {
+func generateUsers(count int) []user {
 	var users = make([]user, count)
 
 	// Вложенная функция для генерации логов
@@ -87,8 +88,11 @@ func generateAndCreateUsers(count int) []user {
 }
 
 // Функция для сохранения информации о пользователе в файл
-func saveUserInfo(u user) error {
+func saveUserInfo(u user, wGoup *sync.WaitGroup) error {
 	fmt.Printf("WRITING FILE FOR USER ID: %d\n", u.id)
+
+	// Задержка дополнительная
+	time.Sleep(time.Millisecond * 10)
 
 	var fileName = fmt.Sprintf("logs/uid_%d.txt", u.id)
 
@@ -101,21 +105,32 @@ func saveUserInfo(u user) error {
 
 	var _, errWriteFile = file.WriteString(u.getActivityInfo())
 
-	return errWriteFile
+	if errWriteFile != nil {
+		return errWriteFile
+	}
+
+	wGoup.Done() // Уведомляем группу о том, что горутина завершилась
+
+	return nil
 }
 
-// Функция для вывода информации о действиях пользователя
-func GetActivityInfo_Print() {
-	fmt.Printf("User: %v\n", userMock.getActivityInfo())
-}
+// ===========================================================
 
 // Функция для генерации пользователей и создания логов
-func GenerateAndCreateLogFilesUsers() {
-	var users = generateAndCreateUsers(100)
+func Main() {
+	var timeCurrent = time.Now()      // Текущее время
+	var waitGroup = &sync.WaitGroup{} // Группа ожидания горутин
+
+	var users = generateUsers(500) // Сгенерированные пользователи
 
 	for _, u := range users {
-		saveUserInfo(u)
+		waitGroup.Add(1)              // Добавляем горутину в ожидание завершения
+		go saveUserInfo(u, waitGroup) // Запускаем горутину, в которой настроено завершение выполнеия горутины waitGroup.Done()
 	}
+
+	waitGroup.Wait() // Ожидаем завершения всех горутин, тем самым блокируя главную горутину
+
+	fmt.Println("TIME ELAPSED: ", time.Since(timeCurrent).String())
 }
 
 // Пример использования горутин

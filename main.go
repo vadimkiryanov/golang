@@ -1,6 +1,6 @@
 package main
 
-import goroutine "main-mode/pkg/14_goroutine"
+import goroutine "main-mode/pkg/14_goroutine_15_WaitGroups"
 
 // Выполняется самая первая
 func init() {
@@ -10,6 +10,5 @@ func init() {
 
 // Функция main - сама по себе как горутина
 func main() {
-
-	goroutine.GenerateAndCreateLogFilesUsers()
+	goroutine.Main()
 }
