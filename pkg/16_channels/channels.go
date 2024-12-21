@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// ChannelsExample демонстрирует работу с каналами в Go
-func ChannelsExample() {
+//  демонстрирует работу с каналами в Go
+func Main() {
     // Создаем два канала для передачи строковых значений
     // make(chan string) создает канал для передачи строк
     channel_1 := make(chan string)

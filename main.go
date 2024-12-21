@@ -1,6 +1,8 @@
 package main
 
-import ()
+import (
+	context_pkg "main-mode/pkg/18_context"
+)
 
 // Выполняется самая первая
 func init() {
@@ -10,4 +12,5 @@ func init() {
 
 // Функция main - сама по себе как горутина
 func main() {
+	context_pkg.Main()
 }
