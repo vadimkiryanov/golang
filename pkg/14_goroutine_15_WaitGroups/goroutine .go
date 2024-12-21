@@ -141,7 +141,7 @@ func SleepRun() {
 	go fmt.Println("2")
 	go fmt.Println("3")
 
-	// Ожидание завершения горутин
+	// Блокировка основной горутины для запуска других горутин
 	time.Sleep(time.Second)
 
 	fmt.Println("FINISHED")
