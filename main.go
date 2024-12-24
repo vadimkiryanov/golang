@@ -1,8 +1,6 @@
 package main
 
-import (
-	context_pkg "main-mode/pkg/18_context"
-)
+import wp_pkg "main-mode/pkg/19_wp"
 
 // Выполняется самая первая
 func init() {
@@ -12,5 +10,5 @@ func init() {
 
 // Функция main - сама по себе как горутина
 func main() {
-	context_pkg.Main()
+	wp_pkg.Main()
 }
