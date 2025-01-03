@@ -1,6 +1,6 @@
 package main
 
-import wp_pkg "main-mode/pkg/19_wp"
+import nethttp "main-mode/pkg/20_nethttp"
 
 // Выполняется самая первая
 func init() {
@@ -10,5 +10,5 @@ func init() {
 
 // Функция main - сама по себе как горутина
 func main() {
-	wp_pkg.Main()
+	nethttp.Main()
 }
