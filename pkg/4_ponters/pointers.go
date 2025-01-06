@@ -10,7 +10,7 @@ func pointersExample() {
 	println(msg, " | msg до 'changeMsg'")
 	println(&msg, " Область памяти")
 
-	var changeMsg func(*string) string = func(msg *string) string {
+	var changeMsg = func(msg *string) string {
 		*msg += " (pointers(msg))" // дереференс
 		return *msg
 	}

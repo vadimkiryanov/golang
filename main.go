@@ -1,6 +1,8 @@
 package main
 
-import nethttp "main-mode/pkg/20_nethttp"
+import (
+	HTTPServer "main-mode/pkg/24_HTTPServer"
+)
 
 // Выполняется самая первая
 func init() {
@@ -10,5 +12,5 @@ func init() {
 
 // Функция main - сама по себе как горутина
 func main() {
-	nethttp.Main()
+	HTTPServer.Main()
 }
