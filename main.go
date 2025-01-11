@@ -1,8 +1,6 @@
 package main
 
-import (
-	HTTPServer "main-mode/pkg/24_HTTPServer"
-)
+import sql_pkg "main-mode/pkg/25_SQL"
 
 // Выполняется самая первая
 func init() {
@@ -12,5 +10,5 @@ func init() {
 
 // Функция main - сама по себе как горутина
 func main() {
-	HTTPServer.Main()
+	sql_pkg.SQL() 
 }
